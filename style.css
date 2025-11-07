@@ -1,0 +1,285 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #0c0c2e, #1a1a4a, #2d1b69);
+    font-family: 'Arial', sans-serif;
+    color: white;
+    overflow: hidden;
+    direction: ltr;
+}
+
+/* شاشة البداية */
+#startScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.start-content {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 40px;
+    border-radius: 20px;
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+}
+
+.start-content h1 {
+    color: #ffd700;
+    font-size: 3em;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+.characters-select {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin: 30px 0;
+}
+
+.character-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.character-card:hover {
+    transform: translateY(-10px);
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.character-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.goku {
+    background: linear-gradient(45deg, #ff6b6b, #ffa500);
+    border: 3px solid #ffd700;
+}
+
+.vegeta {
+    background: linear-gradient(45deg, #4ecdc4, #1e90ff);
+    border: 3px solid #9370db;
+}
+
+.start-btn {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.5em;
+    border-radius: 50px;
+    cursor: pointer;
+    margin: 20px 0;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.start-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.7);
+}
+
+.controls-info {
+    margin-top: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.controls-info h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+}
+
+.controls-info p {
+    margin: 8px 0;
+    color: #ccc;
+}
+
+/* حاوية اللعبة */
+#gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#gameCanvas {
+    background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d);
+    border: 3px solid #ffd700;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+/* واجهة اللعبة */
+#gameUI {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    width: 90%;
+    max-width: 800px;
+}
+
+.player-info {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #ffd700;
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.player-header span {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.level {
+    background: #ff6b6b;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8em;
+}
+
+.health-bar, .energy-bar {
+    height: 20px;
+    background: #333;
+    border-radius: 10px;
+    margin: 8px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff0000, #ff6b6b);
+    border-radius: 10px;
+    width: 100%;
+    transition: width 0.3s ease;
+}
+
+.energy-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ffff, #1e90ff);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.health-text, .energy-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 0.8em;
+    text-shadow: 1px 1px 2px black;
+}
+
+.vs-badge {
+    background: #ffd700;
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 1.2em;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+}
+
+/* شاشة نهاية اللعبة */
+#gameOverScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 500;
+}
+
+.game-over-content {
+    text-align: center;
+    background: rgba(255, 215, 0, 0.1);
+    padding: 40px;
+    border-radius: 20px;
+    border: 3px solid #ffd700;
+}
+
+.game-over-content h2 {
+    color: #ffd700;
+    font-size: 3em;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+.finish-move {
+    color: #00ffff;
+    font-size: 1.5em;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+}
+
+.restart-btn {
+    background: linear-gradient(45deg, #4ecdc4, #1e90ff);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.restart-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(30, 144, 255, 0.7);
+}
+
+/* تأثيرات الحركة */
+@keyframes glow {
+    0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+    50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+    100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+}
+
+.glow {
+    animation: glow 2s infinite;
+}
