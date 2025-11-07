@@ -12,20 +12,27 @@
             text-align: center;
             margin: 0;
             padding: 50px;
+            height: 100vh;
         }
         h1 {
             color: #ffd700;
             font-size: 3em;
+            margin-bottom: 20px;
         }
-        button {
-            background: #ff6b6b;
+        .start-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 15px 40px;
             font-size: 1.5em;
-            border-radius: 10px;
+            border-radius: 50px;
             cursor: pointer;
-            margin: 20px;
+            margin: 30px;
+            transition: all 0.3s ease;
+        }
+        .start-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.7);
         }
         .controls {
             background: rgba(255,255,255,0.1);
@@ -34,25 +41,81 @@
             margin: 20px auto;
             max-width: 600px;
         }
+        #gameScreen {
+            display: none;
+            margin-top: 20px;
+        }
+        canvas {
+            border: 3px solid #ffd700;
+            background: linear-gradient(to bottom, #1a2a6c, #b21f1f);
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>🐉 DRAGON BALL GAME 🐉</h1>
-    <p>اختر شخصيتك وابدأ القتال!</p>
-    
-    <button onclick="startGame()">START GAME</button>
-    
-    <div class="controls">
-        <h3>🎮 CONTROLS:</h3>
-        <p><strong>Player 1:</strong> WASD (حركة) - SPACE (هجوم) - Q (تقنية خاصة)</p>
-        <p><strong>Player 2:</strong> Arrow Keys (حركة) - Num1 (هجوم) - Num2 (تقنية خاصة)</p>
+    <div id="startScreen">
+        <h1>🐉 DRAGON BALL GAME 🐉</h1>
+        <p>اختر شخصيتك وابدأ القتال!</p>
+        
+        <button class="start-btn" onclick="startRealGame()">START FIGHT!</button>
+        
+        <div class="controls">
+            <h3>🎮 CONTROLS:</h3>
+            <p><strong>Player 1:</strong> WASD (حركة) - SPACE (هجوم) - Q (تقنية خاصة)</p>
+            <p><strong>Player 2:</strong> Arrow Keys (حركة) - Num1 (هجوم) - Num2 (تقنية خاصة)</p>
+        </div>
+    </div>
+
+    <div id="gameScreen">
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+        <br>
+        <button class="start-btn" onclick="backToMenu()">BACK TO MENU</button>
     </div>
 
     <script>
-        function startGame() {
-            alert('اللعبة جاهزة! سيتم فتح شاشة القتال');
-            // هنا سيتم تحميل اللعبة الكاملة
+        function startRealGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            initializeGame();
+        }
+
+        function backToMenu() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'block';
+        }
+
+        function initializeGame() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // تنظيف Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // رسم خلفية
+            ctx.fillStyle = '#1a2a6c';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // رسالة في المنتصف
+            ctx.fillStyle = '#ffd700';
+            ctx.font = '30px Arial';
+            ctx.fillText('DRAGON BALL FIGHT!', 250, 200);
+            ctx.fillText('استخدم WASD و Arrow Keys', 240, 250);
+            ctx.fillText('SPACE و Num1 للهجوم', 270, 300);
+            
+            // رسم شخصيتين بسيطتين
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fillRect(100, 350, 60, 100); // Goku
+            
+            ctx.fillStyle = '#4ecdc4';
+            ctx.fillRect(600, 350, 60, 100); // Vegeta
+            
+            // إضافة نص تحت الشخصيات
+            ctx.fillStyle = 'white';
+            ctx.font = '16px Arial';
+            ctx.fillText('GOKU', 105, 470);
+            ctx.fillText('VEGETA', 600, 470);
         }
     </script>
 </body>
-</html>
+            </html>
+            
