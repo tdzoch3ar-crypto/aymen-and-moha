@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragon Ball Z Ultimate Fighting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(45deg, #000000, #1a1a1a, #2d1b69);
+            color: white;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+        
+        /* شاشة البداية */
+        #startScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .start-content {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 50px;
+            border-radius: 20px;
+            border: 4px solid #ffd700;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.8);
+            max-width: 95%;
+        }
+        .game-title {
+            color: #ffd700;
+            font-size: 4em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+            animation: glow 2s infinite;
+        }
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.9); }
+            50% { text-shadow: 0 0 40px rgba(255, 215, 0, 1.2), 0 0 60px rgba(255, 215, 0, 0.8); }
+        }
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .character-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .character-card.selected {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            transform: scale(1.05);
+        }
+        .character-preview {
+            width: 80px;
+            height: 120px;
+            margin: 0 auto 10px;
+            position: relative;
+        }
+        .character-sprite {
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .goku-sprite { background-color: #ff6b6b; }
+        .vegeta-sprite { background-color: #4ecdc4; }
+        .gohan-sprite { background-color: #ff9999; }
+        .frieza-sprite { background-color: #9370db; }
+        .start-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .start-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(255, 107, 107, 0.9);
+        }
+
+        /* ازرار التحكم */
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .player-controls {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        .control-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid #ffd700;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .control-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+        .attack-btn {
+            background: linear-gradient(45deg, #ff4444, #ff6666);
+        }
+        .special-btn {
+            background: linear-gradient(45deg, #00aaff, #0088ff);
+        }
+        .transform-btn {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+        }
+
+        /* شاشة اللعبة */
+        #gameScreen {
+            display: none;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+        }
+        #gameCanvas {
+            background: linear-gradient(to bottom, #000033, #000066, #000099);
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* واجهة اللعبة */
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            width: 90%;
+            max-width: 1000px;
+            z-index: 100;
+        }
+        .player-ui {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+        }
+        .player-name {
+            color: #ffd700;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .health-container, .ki-container {
+            margin: 10px 0;
+        }
+        .health-bar, .ki-bar {
+            height: 25px;
+            background: #333;
+            border-radius: 12px;
+            border: 2px solid #ff0000;
+            overflow: hidden;
+            position: relative;
+        }
+        .ki-bar {
+            border-color: #00ffff;
+        }
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ff6b6b);
+            border-radius: 10px;
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+        .ki-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #1e90ff);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .health-text, .ki-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px black;
+        }
+        .vs-badge {
+            background: #ffd700;
+            color: #000;
+            padding: 15px 20px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+        }
+
+        /* ازرار التحكم في الجوال */
+        .mobile-controls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: none;
+            justify-content: space-around;
+            padding: 0 20px;
+        }
+        .mobile-btn {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 2px solid #ffd700;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        /* شاشة النهاية */
+        #endScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .end-content {
+            text-align: center;
+            background: rgba(255, 215, 0, 0.15);
+            padding: 50px;
+            border-radius: 20px;
+            border: 4px solid #ffd700;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.7);
+        }
+        .winner-text {
+            color: #ffd700;
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+        }
+        .finish-move {
+            color: #00ffff;
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
+        }
+
+        @media (max-width: 768px) {
+            .characters-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .game-title {
+                font-size: 2.5em;
+            }
+            .mobile-controls {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شاشة البداية -->
+    <div id="startScreen">
+        <div class="start-content">
+            <h1 class="game-title">DRAGON BALL Z</h1>
+            <p style="font-size: 1.2em; margin-bottom: 30px; color: #ffd700;">ULTIMATE BATTLE</p>
+            
+            <div class="characters-grid">
+                <div class="character-card" onclick="selectCharacter('goku')">
+                    <div class="character-preview">
+                        <div class="character-sprite goku-sprite"></div>
+                    </div>
+                    <h3>GOKU</h3>
+                    <p style="color: #ffd700; font-size: 0.9em;">Kamehameha</p>
+                </div>
+                <div class="character-card" onclick="selectCharacter('vegeta')">
+                    <div class="character-preview">
+                        <div class="character-sprite vegeta-sprite"></div>
+                    </div>
+                    <h3>VEGETA</h3>
+                    <p style="color: #9370db; font-size: 0.9em;">Galick Gun</p>
+                </div>
+                <div class="character-card" onclick="selectCharacter('gohan')">
+                    <div class="character-preview">
+                        <div class="character-sprite gohan-sprite"></div>
+                    </div>
+                    <h3>GOHAN</h3>
+                    <p style="color: #ff4444; font-size: 0.9em;">Masenko</p>
+                </div>
+                <div class="character-card" onclick="selectCharacter('frieza')">
+                    <div class="character-preview">
+                        <div class="character-sprite frieza-sprite"></div>
+                    </div>
+                    <h3>FRIEZA</h3>
+                    <p style="color: #ffffff; font-size: 0.9em;">Death Beam</p>
+                </div>
+            </div>
+            
+            <!-- ازرار التحكم -->
+            <div class="control-buttons">
+                <div class="player-controls">
+                    <h3 style="color: #ff6b6b; margin-bottom: 15px;">🎮 PLAYER 1 CONTROLS</h3>
+                    <div class="control-row">
+                        <button class="control-btn" onclick="simulateKey('a')">←</button>
+                        <button class="control-btn" onclick="simulateKey('w')">↑</button>
+                        <button class="control-btn" onclick="simulateKey('d')">→</button>
+                    </div>
+                    <div class="control-row">
+                        <button class="control-btn attack-btn" onclick="simulateKey(' ')">⚡ PUNCH</button>
+                        <button class="control-btn special-btn" onclick="simulateKey('q')">💥 SPECIAL</button>
+                    </div>
+                    <div class="control-row">
+                        <button class="control-btn transform-btn" onclick="simulateKey('e')">🌟 TRANSFORM</button>
+                    </div>
+                </div>
+                
+                <div class="player-controls">
+                    <h3 style="color: #4ecdc4; margin-bottom: 15px;">🎮 PLAYER 2 CONTROLS</h3>
+                    <div class="control-row">
+                        <button class="control-btn" onclick="simulateKey('ArrowLeft')">←</button>
+                        <button class="control-btn" onclick="simulateKey('ArrowUp')">↑</button>
+                        <button class="control-btn" onclick="simulateKey('ArrowRight')">→</button>
+                    </div>
+                    <div class="control-row">
+                        <button class="control-btn attack-btn" onclick="simulateKey('1')">⚡ PUNCH</button>
+                        <button class="control-btn special-btn" onclick="simulateKey('2')">💥 SPECIAL</button>
+                    </div>
+                    <div class="control-row">
+                        <button class="control-btn transform-btn" onclick="simulateKey('3')">🌟 TRANSFORM</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="start-btn" onclick="startGame()">🚀 START BATTLE!</button>
+        </div>
+    </div>
+
+    <!-- شاشة اللعبة -->
+    <div id="gameScreen">
+        <div class="game-ui">
+            <div class="player-ui">
+                <div class="player-name" id="p1Name">GOKU</div>
+                <div class="health-container">
+                    <div class="health-bar">
+                        <div class="health-fill" id="p1Health"></div>
+                        <span class="health-text" id="p1HealthText">100%</span>
+                    </div>
+                </div>
+                <div class="ki-container">
+                    <div class="ki-bar">
+                        <div class="ki-fill" id="p1Ki"></div>
+                        <span class="ki-text">KI: <span id="p1KiText">0</span></span>
+                    </div>
+                </div>
+                <div id="p1Transform" style="color: #ffd700; font-size: 0.9em; text-align: center; margin-top: 5px;"></div>
+            </div>
+
+            <div class="vs-badge">VS</div>
+
+            <div class="player-ui">
+                <div class="player-name" id="p2Name">VEGETA</div>
+                <div class="health-container">
+                    <div class="health-bar">
+                        <div class="health-fill" id="p2Health"></div>
+                        <span class="health-text" id="p2HealthText">100%</span>
+                    </div>
+                </div>
+                <div class="ki-container">
+                    <div class="ki-bar">
+                        <div class="ki-fill" id="p2Ki"></div>
+                        <span class="ki-text">KI: <span id="p2KiText">0</span></span>
+                    </div>
+                </div>
+                <div id="p2Transform" style="color: #9370db; font-size: 0.9em; text-align: center; margin-top: 5px;"></div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+
+        <!-- ازرار الجوال -->
+        <div class="mobile-controls">
+            <div class="control-row">
+                <button class="mobile-btn" onclick="simulateKey('a')">←</button>
+                <button class="mobile-btn" onclick="simulateKey('d')">→</button>
+                <button class="mobile-btn attack-btn" onclick="simulateKey(' ')">PUNCH</button>
+                <button class="mobile-btn special-btn" onclick="simulateKey('q')">SPECIAL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- شاشة النهاية -->
+    <div id="endScreen">
+        <div class="end-content">
+            <h2 class="winner-text" id="winnerName">GOKU WINS!</h2>
+            <p class="finish-move" id="finishMove">KAMEHAMEHA!</p>
+            <button class="start-btn" onclick="restartGame()">🔄 FIGHT AGAIN!</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
